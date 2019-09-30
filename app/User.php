@@ -36,4 +36,30 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+
+    public function rol ()
+    {
+        return $this->belongsTo('App\Rol');
+    }
+
+    public function headquarter ()
+    {
+        return $this->belongsTo('App\Headquarter');
+    }
+
+    public function occupation ()
+    {
+        return $this->belongsTo('App\Occupation');
+    }
+
+    public function areas ()
+    {
+        return $this->hasMany('App\Area');
+    }
+
+    public function novelty ()
+    {
+        return $this->hasMany('App\Novelty');
+    }
 }

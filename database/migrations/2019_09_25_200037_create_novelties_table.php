@@ -20,8 +20,10 @@ class CreateNoveltiesTable extends Migration
             
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('area_id');
+            $table->unsignedBigInteger('type_id');
             $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('area_id')->references('id')->on('areas');
+            $table->foreign('type_id')->references('id')->on('types');
 
             $table->timestamps();
         });
