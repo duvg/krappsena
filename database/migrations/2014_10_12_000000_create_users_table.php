@@ -34,6 +34,13 @@ class CreateUsersTable extends Migration
             $table->timestamps();
         });
 
+        Schema::create('areas', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->string('name');
+            $table->boolean('status');
+            $table->timestamps();
+        });
+
         Schema::create('users', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
@@ -47,11 +54,13 @@ class CreateUsersTable extends Migration
             $table->rememberToken();
 
             $table->unsignedBigInteger('rol_id');
+            $table->unsignedBigInteger('area_id');
             $table->unsignedBigInteger('headquarter_id');
             $table->unsignedBigInteger('occupation_id');
 
 
             $table->foreign('rol_id')->references('id')->on('rols');
+            $table->foreign('area_id')->references('id')->on('areas');
             $table->foreign('headquarter_id')->references('id')->on('headquarters');
             $table->foreign('occupation_id')->references('id')->on('occupations');
             $table->timestamps();
@@ -65,9 +74,10 @@ class CreateUsersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('rols');
         Schema::dropIfExists('occupations');
         Schema::dropIfExists('headquarters');
-        Schema::dropIfExists('rols');
+        Schema::dropIfExists('areas');
+        Schema::dropIfExists('users');
     }
 }

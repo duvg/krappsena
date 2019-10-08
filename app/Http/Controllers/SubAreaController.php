@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Rol;
+use App\SubArea;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class RolController extends ApiController
+class SubAreaController extends ApiController
 {
     /**
      * Display a listing of the resource.
@@ -15,10 +15,9 @@ class RolController extends ApiController
      */
     public function index()
     {
-        $rols = Rol::all();
-        return $this->showAll($rols, 200);
+        $ambients = SubArea::all();
+        return $this->showAll($ambients);
     }
-
 
     /**
      * Store a newly created resource in storage.
@@ -29,19 +28,24 @@ class RolController extends ApiController
     public function store(Request $request)
     {
         $rules = [
-            'name' => 'required|min:4|max:15',
-            'description' => 'required'
+            'name' => 'required|min:5|max:100',
+            'code' => 'required|min:2|max:10',
+            'description' => 'required',
+            'area' => 'required'
         ];
 
-        $fields = $request->all();
 
-        $validator = Validator::make($fields, $rules);
+
+        $validator = Validator::make($request->all(), $rules);
 
         if( ! $validator->fails() )
         {
-            $rol = Rol::create($fields);
+            $fields = $request->all();
+            $fields['area_id'] = $request->area;
 
-            return $this->showOne($rol, 201);
+            $ambient = SubArea::create($fields);
+
+            return $this->showOne($ambient);
         }
         else
         {
@@ -57,10 +61,11 @@ class RolController extends ApiController
      */
     public function show($id)
     {
-        $rol = Rol::find($id);
+        $ambient = SubArea::findOrFail($id);
 
-        return $this->showOne($rol, 200);
+        return $this->showOne($ambient);
     }
+
 
 
     /**
@@ -72,27 +77,40 @@ class RolController extends ApiController
      */
     public function update(Request $request, $id)
     {
+        $ambient = SubArea::findOrFail($id);
+
         $rules = [
-            'name' => 'required|min:4|max:15',
-            'description' => 'required'
+            'name' => 'required|min:5|max:100',
+            'code' => 'required|min:2|max:10',
+            'description' => 'required',
+            'area' => 'required'
         ];
 
         $validator = Validator::make($request->all(), $rules);
 
         if ( ! $validator->fails() )
         {
-            $rol = Rol::findOrFail($id);
-            if ($request->has('name'))
+            if ( $request->has('name') )
             {
-                $rol->name = $request->name;
+                $ambient->name = $request->name;
             }
 
-            if($request->has('description'))
+            if ( $request->has('code') )
             {
-                $rol->description = $request->description;
+                $ambient->code = $request->code;
             }
 
-            if(!$rol->isDirty())
+            if ( $request->has('description') )
+            {
+                $ambient->description = $request->description;
+            }
+
+            if ( $request->has('area') )
+            {
+                $ambient->area_id = $request->area;
+            }
+
+            if ( ! $ambient->isDirty() )
             {
                 return response()->json(
                     [
@@ -100,14 +118,12 @@ class RolController extends ApiController
                         'code' => 422], 422);
             }
 
-            $rol->save();
+            $ambient->save();
 
-            return $this->showOne($rol);
+            return $this->showOne($ambient);
         }
-        else
-        {
-            return $validator->errors();
-        }
+
+
     }
 
     /**
@@ -118,10 +134,7 @@ class RolController extends ApiController
      */
     public function destroy($id)
     {
-        $rol = Rol::findOrFail($id);
-
-        $rol->delete();
-
-        return $this->showOne($rol, 200);
+        $ambient = SubArea::findOrFail($id);
+        return $this->showOne($ambient);
     }
 }

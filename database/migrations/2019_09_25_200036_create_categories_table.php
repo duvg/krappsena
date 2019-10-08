@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateAmbientsTable extends Migration
+class CreateCategoriesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,11 @@ class CreateAmbientsTable extends Migration
      */
     public function up()
     {
-        Schema::create('ambients', function (Blueprint $table) {
+        Schema::create('categories', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('name');
-            $table->string('code');
+            $table->string('name', 100);
+            $table->string('icon');
             $table->text('description');
-            
-            $table->unsignedBigInteger('area_id');
-            $table->foreign('area_id')->references('id')->on('areas');
             $table->timestamps();
         });
     }
@@ -32,6 +29,6 @@ class CreateAmbientsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('ambients');
+        Schema::dropIfExists('categories');
     }
 }

@@ -10,13 +10,24 @@ class User extends Authenticatable
 {
     use Notifiable;
 
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name',
+        'email',
+        'password',
+        'lastname',
+        'birthdate',
+        'telephone',
+        'rol_id',
+        'occupation_id',
+        'headquarter_id',
+        'area_id',
+        'status'
     ];
 
     /**
@@ -37,6 +48,16 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    public function setNameAttribute($value)
+    {
+        $this->attributes['name'] = strtolower($value);
+    }
+
+    public function getNameAttribute($value)
+    {
+        return ucfirst($value);
+    }
+
 
     public function rol ()
     {
@@ -53,12 +74,12 @@ class User extends Authenticatable
         return $this->belongsTo('App\Occupation');
     }
 
-    public function areas ()
+    public function area ()
     {
-        return $this->hasMany('App\Area');
+        return $this->belongsTo('App\Area');
     }
 
-    public function novelty ()
+    public function novelties ()
     {
         return $this->hasMany('App\Novelty');
     }

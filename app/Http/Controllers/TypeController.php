@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Type;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
-class TypeController extends Controller
+class TypeController extends ApiController
 {
     /**
      * Display a listing of the resource.
@@ -13,17 +15,9 @@ class TypeController extends Controller
      */
     public function index()
     {
-        //
-    }
+        $types = Type::all();
+        return $this->showAll($types, 200);
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -34,7 +28,22 @@ class TypeController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $rules = [
+            'name' => 'required|min:5|max:160',
+            'description' => 'required|min:15|max:191'
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ( ! $validator->fails() )
+        {
+            $type = Type::create($request->all());
+            return $this->showOne($type, 201);
+        }
+        else
+        {
+            return $this->error($validator->errors(), 422);
+        }
     }
 
     /**
@@ -45,19 +54,10 @@ class TypeController extends Controller
      */
     public function show($id)
     {
-        //
+        $type = Type::findOrFail($id);
+        return $this->showOne($type,200);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.
@@ -68,7 +68,40 @@ class TypeController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $type = Type::findOrFail($id);
+
+        $rules = [
+            'name' => 'required|min:5|max:160',
+            'description' => 'required|min:15|max:191'
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+        if ( ! $validator->fails() )
+        {
+            if ( $request->has('name') )
+            {
+                $type->name = $request->name;
+            }
+
+            if ( $request->has('description') )
+            {
+                $type->description = $request->description;
+            }
+
+            if ( ! $type->isDirty() )
+            {
+                return $this->error(
+                    'Se debe especificar al menos un valor diferente para actualizar',
+                    422);
+            }
+
+            $type->save();
+            return $this->showOne($type, 200);
+        }
+        else
+        {
+            return $this->error($validator->errors());
+        }
     }
 
     /**
@@ -79,6 +112,8 @@ class TypeController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $type = Type::findOrFail($id);
+        $type->delete();
+        return $this->showOne($type, 200);
     }
 }

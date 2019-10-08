@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Rol;
+use App\Occupation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class RolController extends ApiController
+class OccupationController extends ApiController
 {
     /**
      * Display a listing of the resource.
@@ -15,8 +15,8 @@ class RolController extends ApiController
      */
     public function index()
     {
-        $rols = Rol::all();
-        return $this->showAll($rols, 200);
+        $occupations = Occupation::all();
+        return $this->showAll($occupations, 200);
     }
 
 
@@ -29,23 +29,20 @@ class RolController extends ApiController
     public function store(Request $request)
     {
         $rules = [
-            'name' => 'required|min:4|max:15',
-            'description' => 'required'
+            'name' => 'required|min:6',
+            'description' => 'required|min:5|max:191'
         ];
 
-        $fields = $request->all();
-
-        $validator = Validator::make($fields, $rules);
+        $validator = Validator::make($request->all(), $rules);
 
         if( ! $validator->fails() )
         {
-            $rol = Rol::create($fields);
-
-            return $this->showOne($rol, 201);
+            $occupation = Occupation::create($request->all());
+            return $this->showOne($occupation, 201);
         }
         else
         {
-            return $validator->errors();
+            return $this->error($validator->errors(), 422);
         }
     }
 
@@ -57,10 +54,11 @@ class RolController extends ApiController
      */
     public function show($id)
     {
-        $rol = Rol::find($id);
+        $occupation = Occupation::findOrFail($id);
 
-        return $this->showOne($rol, 200);
+        return $this->showOne($occupation, 200);
     }
+
 
 
     /**
@@ -72,41 +70,41 @@ class RolController extends ApiController
      */
     public function update(Request $request, $id)
     {
+        $occupation = Occupation::findOrFail($id);
+
         $rules = [
-            'name' => 'required|min:4|max:15',
-            'description' => 'required'
+            'name' => 'required|min:6',
+            'description' => 'required:min:10|max:191'
         ];
 
         $validator = Validator::make($request->all(), $rules);
 
         if ( ! $validator->fails() )
         {
-            $rol = Rol::findOrFail($id);
-            if ($request->has('name'))
+            if( $request->has('name') )
             {
-                $rol->name = $request->name;
+                $occupation->name = $request->name;
             }
 
-            if($request->has('description'))
+            if( $request->has('description') )
             {
-                $rol->description = $request->description;
+                $occupation->description = $request->description;
             }
 
-            if(!$rol->isDirty())
+            if( ! $occupation->isDirty() )
             {
-                return response()->json(
-                    [
-                        'error' => 'Se debe especificar al menos un valor diferente para actualizar',
-                        'code' => 422], 422);
+                return $this->error(
+                    'Se debe especificar al menos un valor diferente para actualizar',
+                    422);
             }
 
-            $rol->save();
+            $occupation->save();
+            return $this->showOne($occupation, 200);
 
-            return $this->showOne($rol);
         }
         else
         {
-            return $validator->errors();
+            return $this->error($validator->errors(), 422);
         }
     }
 
@@ -118,10 +116,8 @@ class RolController extends ApiController
      */
     public function destroy($id)
     {
-        $rol = Rol::findOrFail($id);
-
-        $rol->delete();
-
-        return $this->showOne($rol, 200);
+        $occupation = Occupation::findOrFail($id);
+        $occupation->delete();
+        return $this->showOne($occupation, 200);
     }
 }

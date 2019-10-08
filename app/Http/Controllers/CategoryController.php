@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Rol;
+use App\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class RolController extends ApiController
+class CategoryController extends ApiController
 {
     /**
      * Display a listing of the resource.
@@ -15,8 +15,8 @@ class RolController extends ApiController
      */
     public function index()
     {
-        $rols = Rol::all();
-        return $this->showAll($rols, 200);
+        $category = Category::all();
+        return $this->showAll($category, 200);
     }
 
 
@@ -29,23 +29,21 @@ class RolController extends ApiController
     public function store(Request $request)
     {
         $rules = [
-            'name' => 'required|min:4|max:15',
+            'name' => 'required|min:5|max:50',
+            'icon' => 'required',
             'description' => 'required'
         ];
 
-        $fields = $request->all();
+        $validator = Validator::make($request->all(), $rules);
 
-        $validator = Validator::make($fields, $rules);
-
-        if( ! $validator->fails() )
+        if ( ! $validator->fails() )
         {
-            $rol = Rol::create($fields);
-
-            return $this->showOne($rol, 201);
+            $category = Category::create($request->all());
+            return $this->showOne($category, 201);
         }
         else
         {
-            return $validator->errors();
+            return $this->error($validator->errors(), 422);
         }
     }
 
@@ -57,11 +55,9 @@ class RolController extends ApiController
      */
     public function show($id)
     {
-        $rol = Rol::find($id);
-
-        return $this->showOne($rol, 200);
+        $category = Category::findOrFail($id);
+        return $this->showOne($category, 200);
     }
-
 
     /**
      * Update the specified resource in storage.
@@ -72,42 +68,53 @@ class RolController extends ApiController
      */
     public function update(Request $request, $id)
     {
+        $category = Category::findOrFail($id);
+
+
+
         $rules = [
-            'name' => 'required|min:4|max:15',
+            'name' => 'required|min:5|max:20',
+            'icon' => 'required',
             'description' => 'required'
         ];
 
         $validator = Validator::make($request->all(), $rules);
 
+
+
         if ( ! $validator->fails() )
         {
-            $rol = Rol::findOrFail($id);
-            if ($request->has('name'))
+            if ( $request->has('name') )
             {
-                $rol->name = $request->name;
+                $category->name = $request->name;
             }
 
-            if($request->has('description'))
+            if ( $request->has('icon' ) )
             {
-                $rol->description = $request->description;
+                $category->icon = $request->icon;
             }
 
-            if(!$rol->isDirty())
+            if ( ! $request->has('description') )
             {
-                return response()->json(
-                    [
-                        'error' => 'Se debe especificar al menos un valor diferente para actualizar',
-                        'code' => 422], 422);
+                $category->description = $request->description;
             }
 
-            $rol->save();
+            if ( ! $category->isDirty() )
+            {
+                return $this->error(
+                    'Se debe especificar al menos un valor diferente para actualizar',
+                    422);
+            }
 
-            return $this->showOne($rol);
+            $category->save();
+
+            return $this->showOne($category);
         }
         else
         {
-            return $validator->errors();
+            return $this->error($validator->errors(), 422);
         }
+
     }
 
     /**
@@ -118,10 +125,8 @@ class RolController extends ApiController
      */
     public function destroy($id)
     {
-        $rol = Rol::findOrFail($id);
-
-        $rol->delete();
-
-        return $this->showOne($rol, 200);
+        $category = Category::findOrFail($id);
+        $category->delete();
+        return $this->showOne($category);
     }
 }

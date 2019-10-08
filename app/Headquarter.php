@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Headquarter extends Model
 {
-    private $fillable = ['name'];
+    protected $fillable = ['name'];
 
     public function users()
     {
