@@ -30,10 +30,10 @@ class NoveltyController extends ApiController
     {
         $rules = [
             'user' => 'required',
-            'area' => 'required',
             'subarea' => 'required',
             'type' => 'required',
             'description' => 'required',
+            'category' => 'required'
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -42,11 +42,12 @@ class NoveltyController extends ApiController
         {
             $fields = $request->all();
             $fields['user_id'] = $request->user;
-            $fields['area_id'] = $request->area;
             $fields['subarea_id'] = $request->subarea;
             $fields['type_id'] = $request->type;
             $fields['description'] = $request->description;
+            $fields['category_id'] = $request->category;
             $fields['status'] = 'pendiente';
+
 
             $novelty = Novelty::create($fields);
             return $this->showOne($novelty);
@@ -82,9 +83,9 @@ class NoveltyController extends ApiController
 
         $rules = [
             'user' => 'required',
-            'area' => 'required',
             'subarea' => 'required',
             'type' => 'required',
+            'category' => 'required',
             'description' => 'required',
         ];
 
@@ -95,11 +96,6 @@ class NoveltyController extends ApiController
             if ( $request->has('user') )
             {
                 $novelty->user_id = $request->user;
-            }
-
-            if ( $request->has('area') )
-            {
-                $novelty->area_id = $request->area;
             }
 
             if ( $request->has('subarea') )

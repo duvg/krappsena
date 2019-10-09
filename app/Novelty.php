@@ -6,7 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class Novelty extends Model
 {
-    protected $fillable = ['area_id', 'user_id', 'type_id', 'status', 'description'];
+    protected $fillable = [
+        'user_id', 
+        'type_id', 
+        'subarea_id',
+        'category_id',
+        'status', 
+        'description'];
 
     public function type()
     {
