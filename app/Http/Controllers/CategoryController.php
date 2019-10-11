@@ -37,8 +37,13 @@ class CategoryController extends ApiController
         $validator = Validator::make($request->all(), $rules);
 
         if ( ! $validator->fails() )
-        {
-            $category = Category::create($request->all());
+        {   
+            $fields = $request->all();
+            $fields['name'] = $request->name;
+            $fields['description'] = $request->description;
+            $fields['icon'] = $request->icon;
+            
+            $category = Category::create($fields);
             return $this->showOne($category, 201);
         }
         else

@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'default' => env('FILESYSTEM_DRIVER', 'local'),
+    'default' => env('FILESYSTEM_DRIVER', 'icons'),
 
     /*
     |--------------------------------------------------------------------------
@@ -62,6 +62,13 @@ return [
             'region' => env('AWS_DEFAULT_REGION'),
             'bucket' => env('AWS_BUCKET'),
             'url' => env('AWS_URL'),
+        ],
+
+        'icons' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/icons'),
+            'url' => env('APP_URL').'/storage',
+            'visibility' => 'public',
         ],
 
     ],
